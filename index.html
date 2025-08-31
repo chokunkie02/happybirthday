@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สุขสันต์วันเกิดนะ พีช!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        /* --- Transitions --- */
+        #transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .view {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .view.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Start Screen --- */
+        #start-button {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #start-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- Envelope Design --- */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            transition: transform 0.5s;
+            filter: drop-shadow(0 10px 8px rgba(0,0,0,0.1));
+        }
+        .envelope:hover {
+            transform: translateY(-10px) scale(1.03);
+        }
+        .envelope.open .top-flap {
+            transform: rotateX(180deg);
+        }
+        .envelope.open {
+            animation: envelope-out 1.2s forwards ease-in-out;
+        }
+        @keyframes envelope-out {
+            0% { transform: scale(1) rotateY(0); opacity: 1; }
+            50% { transform: scale(0.8) rotateY(90deg); opacity: 0.5; }
+            100% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
+        }
+
+        /* Envelope Parts */
+        .envelope .flap {
+            position: absolute;
+        }
+        .envelope .left-flap {
+            top: 0; left: 0; width: 155px; height: 200px;
+            background-image: linear-gradient(to bottom right, #93c5fd, #60a5fa);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+            z-index: 2;
+        }
+        .envelope .right-flap {
+            top: 0; right: 0; width: 155px; height: 200px;
+            background-image: linear-gradient(to bottom left, #93c5fd, #60a5fa);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            z-index: 2;
+        }
+        .envelope .bottom-flap {
+            bottom: 0; left: 0; width: 300px; height: 105px;
+            background-image: linear-gradient(to top, #93c5fd, #60a5fa);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            z-index: 2;
+        }
+        .envelope .front-panel {
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #dbeafe; /* blue-100 */
+            border-radius: 8px;
+            z-index: 3;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+        .envelope .top-flap {
+            top: 0; left: 0; width: 100%; height: 105px;
+            background-image: linear-gradient(to bottom, #60a5fa, #3b82f6);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.8s ease-in-out;
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .envelope .seal {
+            position: absolute;
+            top: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #dbeafe; /* blue-100 */
+            border: 1px solid #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: opacity 0.5s;
+        }
+        .envelope.open .seal {
+            opacity: 0;
+        }
+
+        /* --- Birthday Card --- */
+        #birthday-card {
+            transform: scale(0.8);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* --- Pop-up --- */
+        #popup-message {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-sky-200 to-indigo-200">
+
+    <div id="transition-overlay"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Pop-up Message -->
+    <div id="popup-message" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-semibold opacity-0 pointer-events-none z-50 transform scale-90">
+        <span>ไว้เจอกันใหม่นะจ๊ะ</span>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="view text-center">
+        <button id="start-button" class="bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-600 shadow-lg">
+            เริ่มเลย!
+        </button>
+    </div>
+
+    <!-- Envelope View -->
+    <div id="envelope-view" class="view hidden text-center flex-col items-center justify-center">
+        <div class="envelope-wrapper">
+            <div id="envelope" class="envelope">
+                <div class="flap left-flap"></div>
+                <div class="flap right-flap"></div>
+                <div class="flap bottom-flap"></div>
+                <div class="flap front-panel"></div>
+                <div class="flap top-flap"></div>
+                <div class="seal">⭐</div>
+            </div>
+        </div>
+        <p id="instruction" class="mt-12 text-gray-700 text-lg font-semibold transition-opacity duration-500">
+            ถึงพีช <br> <span class="text-sm font-normal">ลองเปิดดูจ้าาา</span>
+        </p>
+    </div>
+    
+    <!-- Card View -->
+    <div id="birthday-card" class="view hidden flex-col bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 max-w-lg w-full">
+        <!-- Top Section -->
+        <div class="text-center">
+            <div class="w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 animate-float">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Candles -->
+                    <path fill="#FFD700" d="M98 40 L102 40 L102 60 L98 60 Z"/>
+                    <path fill="#FF4500" d="M100 35 a 4 4 0 0 1 0 -8 a 4 4 0 0 1 0 8"/>
+                    <path fill="#FFD700" d="M78 50 L82 50 L82 70 L78 70 Z"/>
+                    <path fill="#FF4500" d="M80 45 a 4 4 0 0 1 0 -8 a 4 4 0 0 1 0 8"/>
+                    <path fill="#FFD700" d="M118 50 L122 50 L122 70 L118 70 Z"/>
+                    <path fill="#FF4500" d="M120 45 a 4 4 0 0 1 0 -8 a 4 4 0 0 1 0 8"/>
+                    <!-- Cake layers -->
+                    <path fill="#BFDBFE" d="M50 100 Q100 80 150 100 L150 120 Q100 140 50 120 Z"/>
+                    <rect x="45" y="100" width="110" height="30" fill="#A52A2A" rx="5"/>
+                    <rect x="40" y="130" width="120" height="40" fill="#8B4513" rx="5"/>
+                    <ellipse cx="100" cy="175" rx="70" ry="10" fill="#F0F8FF"/>
+                </svg>
+            </div>
+             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 tracking-tight">
+                สุขสันต์วันเกิดนะ <span class="text-blue-500">พีช</span>!
+             </h1>
+        </div>
+        <!-- Middle Section -->
+        <div class="text-center mt-4">
+            <p class="text-gray-700 text-sm md:text-base leading-relaxed">
+                ขอบคุณมึงมากๆสำหรับช่วงเวลาที่ผ่านมา คิดถึงเสมอนะเว้ยย ดีใจมากที่ได้รู้จักมึง <br>
+                ขอบคุณมากๆที่เลี้ยงขนมปังวันสานฝัน ขอบคุณมากๆที่ให้ไปนอน ขอบคุณมากๆที่ไปรับไปส่ง ขอบคุณมากๆที่ได้สอนอะไรกูหลายอย่างเลยเว้ย ขอบคุณจริงๆ กูดีใจมากๆนะเว้ยที่มีเพื่อนแบบมึง ขอบคุณมากๆนะ
+            </p>
+            <div class="border-t my-4"></div>
+            <p class="text-gray-700 text-sm md:text-base">
+                ขอให้มีความสุขเยอะๆ มีความรักที่ดี มีความสุขในชีวิต มีงานดีๆทำ มีคนรอบข้างที่คอยช่วยเหลือนะเว้ยย
+            </p>
+        </div>
+        <!-- Bottom Section -->
+        <div class="text-center mt-auto pt-4">
+            <p class="text-lg font-semibold text-sky-600">
+                ขอบคุณมากๆเพื่อน
+            </p>
+            <button id="close-button" class="mt-6 bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600 transition duration-300 shadow-md">
+                ปิดการ์ด
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const transitionOverlay = document.getElementById('transition-overlay');
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const envelopeView = document.getElementById('envelope-view');
+        const envelope = document.getElementById('envelope');
+        const instruction = document.getElementById('instruction');
+        const birthdayCard = document.getElementById('birthday-card');
+        const closeButton = document.getElementById('close-button');
+        const popupMessage = document.getElementById('popup-message');
+        
+        let isOpened = false;
+        const allViews = document.querySelectorAll('.view');
+
+        // Function to handle view transitions with fade-to-black
+        function transitionToView(viewToShow) {
+            transitionOverlay.style.opacity = '1';
+
+            setTimeout(() => {
+                allViews.forEach(view => view.classList.add('hidden'));
+                viewToShow.classList.remove('hidden');
+
+                if (viewToShow === startScreen) {
+                    envelope.classList.remove('open');
+                    isOpened = false;
+                }
+
+                transitionOverlay.style.opacity = '0';
+            }, 800); 
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', () => {
+            transitionToView(envelopeView);
+        });
+
+        envelope.addEventListener('click', () => {
+            if (isOpened) return;
+            isOpened = true;
+
+            envelope.classList.add('open');
+            instruction.style.opacity = '0';
+
+            setTimeout(() => {
+                transitionToView(birthdayCard);
+                setTimeout(startConfetti, 800); 
+            }, 1200);
+        });
+
+        closeButton.addEventListener('click', () => {
+            stopConfetti();
+            transitionToView(startScreen);
+
+            setTimeout(() => {
+                popupMessage.style.opacity = '1';
+                popupMessage.style.transform = 'translate(-50%, -50%) scale(1)';
+                setTimeout(() => {
+                    popupMessage.style.opacity = '0';
+                    popupMessage.style.transform = 'translate(-50%, -50%) scale(0.9)';
+                }, 1000); 
+            }, 800); 
+        });
+
+
+        // --- Confetti script ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+        const particles = [];
+        const colors = ['#93c5fd', '#60a5fa', '#3b82f6', '#fef08a', '#e5e7eb'];
+        let animationFrameId = null;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = -20;
+                this.size = Math.random() * 8 + 2;
+                this.speed = Math.random() * 3 + 2;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.spin = Math.random() * Math.PI * 2;
+                this.spinSpeed = Math.random() * 0.2 - 0.1;
+            }
+            update() {
+                this.y += this.speed;
+                this.x += Math.sin(this.y * 0.05);
+                this.spin += this.spinSpeed;
+                if (this.y > height) {
+                    this.y = -20;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.spin);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+        function createParticles() {
+            const particleCount = 200;
+            if (particles.length > 0) return;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            animationFrameId = requestAnimationFrame(animate);
+        }
+        function startConfetti() {
+             createParticles();
+             if (!animationFrameId) {
+                animate();
+             }
+        }
+        function stopConfetti() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            particles.length = 0;
+            setTimeout(() => ctx.clearRect(0, 0, width, height), 50);
+        }
+    </script>
+
+</body>
+</html>
