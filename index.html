@@ -149,6 +149,9 @@
         /* --- Birthday Card --- */
         #birthday-card {
             transform: scale(0.8);
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         @keyframes float {
@@ -200,15 +203,15 @@
                 <div class="seal">🍀</div>
             </div>
         </div>
-        <p id="instruction" class="mt-12 text-gray-700 text-lg font-semibold transition-opacity duration-500">
+        <p id="instruction" class="mt-12 text-gray-700 text-lg font-semibold transition-opacity duration-500 text-center">
             ถึงน้ำหวาน <br> <span class="text-sm font-normal">ลองเปิดดูจ้าาา</span>
         </p>
     </div>
     
     <!-- Card View -->
-    <div id="birthday-card" class="view hidden flex-col bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 max-w-lg w-full">
+    <div id="birthday-card" class="view hidden flex-col bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 mx-auto">
         <!-- Top Section -->
-        <div class="text-center">
+        <div class="text-center w-full">
             <div class="w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 animate-float">
                 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                     <path fill="#FFD700" d="M98 40 L102 40 L102 60 L98 60 Z"/>
@@ -223,24 +226,24 @@
                     <ellipse cx="100" cy="175" rx="70" ry="10" fill="#F0FDF4"/>
                 </svg>
             </div>
-             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 tracking-tight">
+             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 tracking-tight text-center">
                 สุขสันต์วันเกิดนะ <span class="text-green-500">น้ำหวาน</span>!
              </h1>
         </div>
         <!-- Middle Section -->
-        <div class="text-center mt-6">
-            <p class="text-gray-600 text-md mb-2">มีความสุขมากๆ ยิ้มเยอะๆ นะ</p>
-            <p class="text-gray-600 text-md mb-4">ดีใจที่ได้รู้จักกัน</p>
-            <div class="border-t my-4"></div>
-            <p class="text-gray-700 text-sm md:text-base">ถึงจะเป็นช่วงสั้นๆ แต่เป็นช่วงที่มีความสุขมากๆ ถึงอาจไม่มีโอกาสได้เจอกันแล้วว แต่หวังว่าสักวันจะได้เจอกันครับ ขอบคุณมากๆ สำหรับช่วงเวลาสั้นๆ</p>
-            <p class="text-gray-700 text-sm md:text-base mt-3">มีความสุขมากๆๆ และก็ขอให้ได้มหาลัยที่หวัง เจอสังคมดีๆ เพื่อนดีๆ ชีวิตที่ดีนะ มีความสุขในทุกวันด้วย</p>
+        <div class="text-center mt-6 w-full">
+            <p class="text-gray-600 text-md mb-2 text-center">มีความสุขมากๆ ยิ้มเยอะๆ นะ</p>
+            <p class="text-gray-600 text-md mb-4 text-center">ดีใจที่ได้รู้จักกัน</p>
+            <div class="border-t my-4 w-full"></div>
+            <p class="text-gray-700 text-sm md:text-base text-center mx-auto max-w-prose">ถึงจะเป็นช่วงสั้นๆ แต่เป็นช่วงที่มีความสุขมากๆ ถึงอาจไม่มีโอกาสได้เจอกันแล้วว แต่หวังว่าสักวันจะได้เจอกันครับ ขอบคุณมากๆ สำหรับช่วงเวลาสั้นๆ</p>
+            <p class="text-gray-700 text-sm md:text-base mt-3 text-center mx-auto max-w-prose">มีความสุขมากๆๆ และก็ขอให้ได้มหาลัยที่หวัง เจอสังคมดีๆ เพื่อนดีๆ ชีวิตที่ดีนะ มีความสุขในทุกวันด้วย</p>
         </div>
         <!-- Bottom Section -->
-        <div class="text-center mt-auto pt-6">
-            <p class="text-lg font-semibold text-teal-600">
+        <div class="text-center mt-auto pt-6 w-full">
+            <p class="text-lg font-semibold text-teal-600 text-center">
                 จะไม่มีวันลืมแน่นอนนน!
             </p>
-            <button id="close-button" class="mt-6 bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 shadow-md">
+            <button id="close-button" class="mt-6 bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 shadow-md mx-auto block">
                 ปิดการ์ด
             </button>
         </div>
@@ -385,4 +388,3 @@
 
 </body>
 </html>
-
